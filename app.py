@@ -30,18 +30,16 @@ else:
     if st.session_state.kor <= 5:
         st.markdown(f"## 🗺️ {st.session_state.kor}. Nap: Fuvar tervezése")
         
-        # Járművek adatai
         jarmuvek = {
-            "🚐 Helyi Furgon (Olcsó, kicsi)": {"kapacitas": 10, "koltseg_km": 50, "sebesseg": 50, "ikon": "🚐"},
-            "🚛 Nagy Teherautó (Közepes)": {"kapacitas": 40, "koltseg_km": 150, "sebesseg": 200, "ikon": "🚛"},
-            "🚢 Konténeres Hajó (Hatalmas, lassú)": {"kapacitas": 120, "koltseg_km": 400, "sebesseg": 800, "ikon": "🚢"},
-            "✈️ Cargo Repülő (Gyors, drága)": {"kapacitas": 60, "koltseg_km": 900, "sebesseg": 300, "ikon": "✈️"}
+            "🚐 Helyi Furgon (Olcsó, kicsi)": {"kapacitas": 10, "koltseg_km": 50},
+            "🚛 Nagy Teherautó (Közepes)": {"kapacitas": 40, "koltseg_km": 150},
+            "🚢 Konténeres Hajó (Hatalmas, lassú)": {"kapacitas": 120, "koltseg_km": 400},
+            "✈️ Cargo Repülő (Gyors, drága)": {"kapacitas": 60, "koltseg_km": 900}
         }
 
         valasztott_jarmu = st.selectbox("Válassz szállítóeszközt:", list(jarmuvek.keys()))
         j = jarmuvek[valasztott_jarmu]
 
-        # Célállomások
         celok = {
             "🏠 Helyi piac (Budapest környéke)": 60,
             "🇪🇺 Nyugat-Európa (Bécs / München)": 600,
@@ -50,7 +48,7 @@ else:
         valasztott_cel = st.selectbox("Válassz célállomást:", list(celok.keys()))
         tavolsag = celok[valasztott_cel]
 
-        st.info(f"{j['ikon']} **Jármű adatok:** Kapacitás: **{j['kapacitas']} db** áru | Távolság: **{tavolsag} km**")
+        st.info(f"Jármű kapacitás: **{j['kapacitas']} db** áru | Távolság: **{tavolsag} km**")
 
         mennyiseg = st.slider("Mennyi árut pakolsz a járműbe?", 1, j["kapacitas"], 5)
 
@@ -68,11 +66,7 @@ else:
             else:
                 st.warning(f"⚠️ Ráfizetéses fuvar! Bevétel: {bevetel:,} Ft | Útiköltség: {ut_koltseg:,} Ft | Veszteség: **{profit:,} Ft**")
 
-            if st.session_state.kor == 5:
-                st.session_state.kor += 1
-            else:
-                st.session_state.kor += 1
-            
+            st.session_state.kor += 1
             st.rerun()
     else:
         st.balloons()

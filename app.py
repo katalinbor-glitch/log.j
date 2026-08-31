@@ -1,10 +1,10 @@
 import streamlit as st
 import random
 
-st.set_page_config(page_title="Logisztikai Tycoon: Turbo Edition", page_icon="🚚", layout="centered")
+st.set_page_config(page_title="Logisztikai Tycoon: Pro Edition", page_icon="🚚", layout="centered")
 
-st.title("🚚 Logisztikai Tycoon: Turbo Edition")
-st.markdown("Most már nemcsak fuvarozol, hanem cégbirodalmat építesz! Versenyezz a **MegaLog Kft.**-vel, vegyél fel sofőröket és fejleszd a telephelyed!")
+st.title("🚚 Logisztikai Tycoon: Pro Edition")
+st.markdown("Vezesd a céged a **MegaLog Kft.** ellen! Vigyázz a gyorshajtásra, a vezetési időre, és használd ki az időablakos bónuszokat!")
 
 if "indul" not in st.session_state:
     st.session_state.indul = False
@@ -21,7 +21,7 @@ if not st.session_state.indul:
         st.session_state.kor = 1
         st.session_state.soforok_szama = 1
         st.session_state.raktar_szint = 1
-        st.session_state.bónusz_bevetel = 0 
+        st.session_state.uzemanyag_kedvezmeny = 0
         st.rerun()
 
 else:
@@ -32,8 +32,9 @@ else:
     
     st.sidebar.markdown("---")
     st.sidebar.markdown("### 🏢 Cégfejlesztések")
-    st.sidebar.text(("👥 Sofőrök száma: ") + str(st.session_state.soforok_szama))
-    st.sidebar.text(f"📦 Raktár szint: {st.session_state.raktar_szint}")
+    st.sidebar.text(f"👥 Sofőrök száma: {st.session_state.soforok_szama}")
+    st.sidebar.text(f"📦 Raktár szint: {st.session_state.raktar_szint}. szint")
+    st.sidebar.text(f"⛽ Üzemanyag-spórolás: -{st.session_state.uzemanyag_kedvezmeny}%")
 
     if st.session_state.penz >= 50000 and st.sidebar.button("👥 Új sofőr felvétele (50k Ft)"):
         st.session_state.penz -= 50000
@@ -44,7 +45,13 @@ else:
     if st.session_state.penz >= 70000 and st.sidebar.button("🏗️ Raktár bővítés (70k Ft)"):
         st.session_state.penz -= 70000
         st.session_state.raktar_szint += 1
-        st.success("A raktár bővült!")
+        st.success(f"A raktár a(z) {st.session_state.raktar_szint}. szintre lépett!")
+        st.rerun()
+
+    if st.session_state.penz >= 40000 and st.sidebar.button("⚡ Üzemanyag-takarékosság (40k Ft)"):
+        st.session_state.penz -= 40000
+        st.session_state.uzemanyag_kedvezmeny += 15
+        st.success("Sikeres fejlesztés!")
         st.rerun()
 
     if st.session_state.kor <= 5:
@@ -68,35 +75,69 @@ else:
         valasztott_cel = st.selectbox("Válassz útvonalat:", list(celok.keys()))
         tavolsag = celok[valasztott_cel]
 
-        VIP_megbizas = random.random() < 0.35
-        if VIP_megbizas:
-            st.info("⭐ **VIP megbízás érkezett!** (+50% bevétel)")
+        csempeszet = st.checkbox("🔥 Titkos csempészáru (Dupla bevétel, de 20% esély a bukásra és 40k bírságra)")
+        gyorshajtas = st.checkbox("⚡ Nyomod neki a gázt? (Gyorsabb fuvar, de 25% esély traffipaxra és 30k bírságra)")
 
         mennyiseg = st.slider("Mennyi árut pakolsz be?", 1, j["kapacitas"], 10)
 
         if st.button("🚀 Indulás a fuvarra!", type="primary"):
-            ut_koltseg = tavolsag * j["koltseg_km"]
+            # Vezetői idő túllépés esélye nagy távolságon
+            sofor_kimerult = (tavolsag >= 3000) and (random.random() < 0.30)
+            
+            if sofor_kimerult:
+                st.warning("😴 A sofór túllépte a engedélyezett vezetési időt! Pihennie kell, ez a nap elment.")
+                st.session_state.kor += 1
+                st.session_state.rivalis_penz += random.randint(40000, 85000)
+                st.rerun()
+
+            alap_koltseg = tavolsag * j["koltseg_km"]
+            kedvezmeny_faktor = (100 - st.session_state.uzemanyag_kedvezmeny) / 100
+            ut_koltseg = int(alap_koltseg * kedvezmeny_faktor)
+            
             alap_ar = random.randint(1400, 2000)
             raktar_szorzó = 1 + (st.session_state.raktar_szint - 1) * 0.15
             
-            bevetel = int(mennyiseg * alap_ar * raktar_szorzó)
-            
-            if VIP_megbizas:
-                bevetel = int(bevetel * 1.5)
+            extra_birsag = 0
+            if gyorshajtas:
+                if random.random() < 0.25:
+                    extra_birsag = 30000
+                    st.error("📸 Villant a traffipax! Gyorshajtási bírság: 30,000 Ft.")
 
-            profit = bevetel - ut_koltseg
-            passziv_bevetel = (st.session_state.soforok_szama - 1) * 15000
-            ossz_profit = profit + passziv_bevetel
-
-            st.session_state.penz += ossz_profit
-
-            if ossz_profit > 0:
-                st.success(f"🎉 Sikeres fuvar! Tiszta profit: **+{ossz_profit:,} Ft**")
+            if csempeszet:
+                bukas = random.random() < 0.20
+                if bukas:
+                    biro_birsag = 40000
+                    st.session_state.penz -= (ut_koltseg + biro_birsag + extra_birsag)
+                    st.error(f"🚨 Elkaptak a vámosok! Bírság: {biro_birsag:,} Ft.")
+                    profit = -ut_koltseg - biro_birsag - extra_birsag
+                else:
+                    bevetel = int(mennyiseg * alap_ar * raktar_szorzó * 2)
+                    profit = bevetel - ut_koltseg - extra_birsag
+                    st.session_state.penz += profit
+                    st.success(f"🥷 Sikerült a csempészet! Tiszta profit: **+{profit:,} Ft**")
             else:
-                st.warning(f"⚠️ Ráfizetéses fuvar! Veszteség: **{ossz_profit:,} Ft**")
+                bevetel = int(mennyiseg * alap_ar * raktar_szorzó)
+                if gyorshajtas and extra_birsag == 0:
+                    bevetel = int(bevetel * 1.15) # Gyorshajtás bónusz, ha nem kapták el
+                
+                profit = bevetel - ut_koltseg - extra_birsag
+                st.session_state.penz += profit
+                
+                if profit > 0:
+                    st.success(f"🎉 Sikeres fuvar! Tiszta profit: **+{profit:,} Ft**")
+                else:
+                    st.warning(f"⚠️ Ráfizetéses fuvar! Veszteség: **{profit:,} Ft**")
+
+            passziv_bevetel = (st.session_state.soforok_szama - 1) * 15000
+            st.session_state.penz += passziv_bevetel
+
+            # Időablak bónusz: Ha helyi fuvar volt, belefér egy extra fuvar (nem növekszik a nap)
+            if tavolsag == 50 and random.random() < 0.40:
+                st.info("⏱️ Kiváló időbeosztás! Az időablak miatt belefért egy extra helyi kör ezen a napon (a nap nem lépett tovább)!")
+            else:
+                st.session_state.kor += 1
 
             st.session_state.rivalis_penz += random.randint(40000, 85000)
-            st.session_state.kor += 1
             st.rerun()
 
     else:

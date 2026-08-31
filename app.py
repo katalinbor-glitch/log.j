@@ -1,10 +1,10 @@
 import streamlit as st
 import random
 
-st.set_page_config(page_title="Logisztikai Tycoon: Real Time & Intermodal", page_icon="⏳", layout="centered")
+st.set_page_config(page_title="Logisztikai Tycoon: Multi-Fleet Pro", page_icon="🚚", layout="centered")
 
-st.title("⏳ Logisztikai Tycoon: Real Time & Intermodal")
-st.markdown("Most már a **menetidő** is számít! A távoli hajóutak és repülők több napig kötik le a kapacitásodat. Tervezz előre!")
+st.title("🚚 Logisztikai Tycoon: Multi-Fleet Pro")
+st.markdown("A legprofibb szint! Használd a pontos **Incoterms klauzulákat** (FCA, CPT, FOB, DDP), szervezz **kombinált multimodális fuvarokat**, és indíts egyszerre **akár 2 szállítóeszközt** is egyetlen megbízáshoz!")
 
 if "indul" not in st.session_state:
     st.session_state.indul = False
@@ -13,11 +13,11 @@ if not st.session_state.indul:
     st.markdown("### 🏢 Új Vállalat Indítása")
     ceg_nev = st.text_input("Céged neve:", "GlobalTrans Kft.")
     
-    if st.button("Induljon a valós idejű birodalom! 🚀"):
+    if st.button("Induljon a multimodális birodalom! 🚀"):
         st.session_state.indul = True
         st.session_state.ceg_nev = ceg_nev
-        st.session_state.penz = 180000
-        st.session_state.rivalis_penz = 150000
+        st.session_state.penz = 220000
+        st.session_state.rivalis_penz = 180000
         st.session_state.kor = 1
         st.session_state.soforok_szama = 1
         st.session_state.raktar_szint = 1
@@ -55,15 +55,15 @@ else:
         st.rerun()
 
     if st.session_state.kor <= 12:
-        st.markdown(f"## 🗺️ {st.session_state.kor}. Nap: Aktuális Megbízások")
+        st.markdown(f"## 🗺️ {st.session_state.kor}. Nap: Logisztikai Megbízások")
 
-        random.seed(st.session_state.kor * 555)
+        random.seed(st.session_state.kor * 777)
         
         ajanlatok_pool = [
-            {"cim": "🍅 Friss mezőgazdasági export", "leírás": "Gyors helyi fuvar hűtést igénylő áruval.", "javasolt": "🚐 Helyi Furgon (Olcsó, stabil)", "tav": 50, "ido": 1, "alap_bev": 70000},
-            {"cim": "📦 Gyári alkatrészek Nyugat-Európába", "leírás": "Megbízható közúti fuvar uniós partnerhez.", "javasolt": "🚛 Nagy Teherautó (A győztes!)", "tav": 500, "ido": 2, "alap_bev": 190000},
-            {"cim": "🚢 Konténeres nyersanyag a Távol-Keletre", "leírás": "Hatalmas tömegáru óceáni útvonalon. (Hosszú menetidő!)", "javasolt": "🚢 Konténeres Hajó (Óriási raktér)", "tav": 3000, "ido": 4, "alap_bev": 600000},
-            {"cim": "⚡ Sürgős mikrochip szállítmány Ázsiába", "leírás": "Magas értékű, expressz repülős küldetés.", "javasolt": "✈️ Cargo Repülő (Villámgyors)", "tav": 3000, "ido": 2, "alap_bev": 850000}
+            {"cim": "🍅 Friss mezőgazdasági export", "leírás": "Helyi/regionális gyors fuvar hűtést igénylő áruval.", "javasolt": ["🚐 Helyi Furgon (Olcsó, stabil)"], "tav": 50, "ido": 1, "alap_bev": 75000},
+            {"cim": "📦 Gyári alkatrészek Nyugat-Európába", "leírás": "Közúti fuvar uniós partnerhez. Akár több teherautó is küldhető.", "javasolt": ["🚛 Nagy Teherautó (A győztes!)"], "tav": 500, "ido": 2, "alap_bev": 210000},
+            {"cim": "🚢 Hatalmas tömegáru a Távol-Keletre", "leírás": "Óriási tengeri konténeres fuvar (vagy kombinált flotta).", "javasolt": ["🚢 Konténeres Hajó (Óriási raktér)"], "tav": 3000, "ido": 4, "alap_bev": 650000},
+            {"cim": "⚡ Sürgős elektronikai expressz", "leírás": "Magas értékű, sürgős küldetés Ázsiába.", "javasolt": ["✈️ Cargo Repülő (Villámgyors)"], "tav": 3000, "ido": 2, "alap_bev": 900000}
         ]
         
         napi_ajanlatok = random.sample(ajanlatok_pool, 3)
@@ -71,25 +71,24 @@ else:
         valasztott_index = st.radio(
             "Válaszd ki a napi fuvarfeladatot:",
             options=[0, 1, 2],
-            format_func=lambda i: f"{napi_ajanlatok[i]['cim']} | Táv: {napi_ajanlatok[i]['tav']} km | Időtartam: {napi_ajanlatok[i]['ido']} nap | Bevétel: {napi_ajanlatok[i]['alap_bev']:,} Ft"
+            format_func=lambda i: f"{napi_ajanlatok[i]['cim']} | Táv: {napi_ajanlatok[i]['tav']} km | Idő: {napi_ajanlatok[i]['ido']} nap | Bevétel: {napi_ajanlatok[i]['alap_bev']:,} Ft"
         )
         
         aktiv_feladat = napi_ajanlatok[valasztott_index]
-        st.info(f"**Részletek:** {aktiv_feladat['leírás']} | **Menetidő:** {aktiv_feladat['ido']} nap | Ajánlott eszköz: *{aktiv_feladat['javasolt']}*")
+        st.info(f"**Részletek:** {aktiv_feladat['leírás']} | **Menetidő:** {aktiv_feladat['ido']} nap")
 
-        st.markdown("### 📋 Incoterms Felelősségi Klauzula")
+        # Szakszerű Incoterms klauzulák kezelése
+        st.markdown("### 📋 Incoterms Szakmai Klauzulák")
         incoterm = st.selectbox(
-            "Válaszd ki a szerződéses feltételt:",
+            "Válaszd ki a nemzetközi szerződéses feltételt:",
             [
-                "EXW (Ex Works) - Kisebb bevétel, minimális felelősség",
-                "FOB (Free on Board) - Standard piaci ár és felelősség",
-                "DDP (Delivered Duty Paid) - Maximális bevétel, de teljes kockázat!"
+                "EXW (Ex Works) - Gyári átvétel: minimális felelősség, kisebb bevétel",
+                "FCA (Free Carrier) - Költségmentes fuvarozónak átadva (Ideális közútra/kamionra)",
+                "CPT (Carriage Paid To) - Fuvarozás fizetve rendeltetési helyig",
+                "FOB (Free on Board) - Hajó fedélzetére rajtva (Csak vízi/tengeri szállításhoz)",
+                "DDP (Delivered Duty Paid) - Vámkezelve leszállítva: max. bevétel, de teljes kockázat!"
             ]
         )
-
-        kombinalt = False
-        if aktiv_feladat['tav'] >= 500:
-            kombinalt = st.checkbox("⚓+🚛 Intermodális Kombinált Szállítás (Hajó + Teherautó: olcsóbb km, de +20k átrakodási díj)")
 
         jarmuvek = {
             "🚐 Helyi Furgon (Olcsó, stabil)": {"kapacitas": 20, "koltseg_km": 35},
@@ -98,73 +97,92 @@ else:
             "✈️ Cargo Repülő (Villámgyors)": {"kapacitas": 80, "koltseg_km": 650}
         }
 
-        valasztott_jarmu = st.selectbox("Milyen fő szállítóeszközt indítasz?", list(jarmuvek.keys()))
-        j = jarmuvek[valasztott_jarmu]
+        st.markdown("### 🚛 Járműpark Kiválasztása (Akár 2 eszközt is indíthatsz egyszerre!)")
+        elso_jarmu = st.selectbox("1. Elsődleges szállítóeszköz:", list(jarmuvek.keys()))
+        
+        masodik_jarmu_aktivalva = st.checkbox("➕ Második szállítóeszköz indítása is a megbízáshoz (Multi-fleet konvoj)")
+        masodik_jarmu = None
+        if masodik_jarmu_aktivalva:
+            masodik_jarmu = st.selectbox("2. Másodlagos szállítóeszköz:", list(jarmuvek.keys()))
 
-        mennyiseg = st.slider("Mennyi árut pakolsz be?", 1, j["kapacitas"], 15)
+        mennyiseg = st.slider("Összes szállítandó árumennyiség egységben:", 1, 200, 30)
 
-        if st.button("🚀 Megbízás indítása!", type="primary"):
+        if st.button("🚀 Konvoj indítása!", type="primary"):
             tavolsag = aktiv_feladat['tav']
             fuvar_ido = aktiv_feladat['ido']
             
-            km_koltseg = j['koltseg_km']
-            atrakodasi_dij = 0
-            if kombinalt:
-                km_koltseg = int(km_koltseg * 0.75)
-                atrakodasi_dij = 20000
-
-            alap_koltseg = tavolsag * km_koltseg
-            kedvezmeny_faktor = (100 - st.session_state.uzemanyag_kedvezmeny) / 100
-            ut_koltseg = int(alap_koltseg * kedvezmeny_faktor) + atrakodasi_dij
-
-            helyes_jarmu = (valasztott_jarmu == aktiv_feladat['javasolt'])
+            # Klauzula validáció és korrekció szakmailag
+            helyes_klauzula = True
+            if "FOB" in incoterm and "🚢" not in elso_jarmu and (not masodik_jarmu or "🚢" not in masodik_jarmu):
+                helyes_klauzula = False
+                st.warning("⚠️ Szakmai hiba: A FOB klauzula kizárólag tengeri/vízi szállításhoz (hajóhoz) használható! Emiatt a megbízó kötbért számolt fel.")
 
             incoterm_szorzó = 1.0
             if "EXW" in incoterm:
-                incoterm_szorzó = 0.85
+                incoterm_szorzó = 0.80
+            elif "FCA" in incoterm or "CPT" in incoterm:
+                incoterm_szorzó = 1.05
+            elif "FOB" in incoterm:
+                incoterm_szorzó = 1.15
             elif "DDP" in incoterm:
-                incoterm_szorzó = 1.25
+                incoterm_szorzó = 1.30
 
-            raktar_szorzó = 1 + (st.session_state.raktar_szint - 1) * 0.15
+            # 1. Jármű költségei
+            j1 = jarmuvek[elso_jarmu]
+            kedv_fakt = (100 - st.session_state.uzemanyag_kedvezmeny) / 100
+            ut_koltseg_1 = int(tavolsag * j1['koltseg_km'] * kedv_fakt)
+            kapacitas_osszes = j1['kapacitas']
 
-            if helyes_jarmu:
-                bevetel = int(aktiv_feladat['alap_bev'] * (mennyiseg / j['kapacitas']) * raktar_szorzó * incoterm_szorzó)
-                
-                vám_birsag = 0
-                if "DDP" in incoterm and tavolsag >= 500 and random.random() < 0.18:
-                    vám_birsag = 40000
-                    st.warning("⚠️ Vámhivatali akadás DDP fuvarnál! -40,000 Ft büntetés.")
+            # 2. Jármű költségei (ha van)
+            ut_koltseg_2 = 0
+            if masodik_jarmu_aktivalva and masodik_jarmu:
+                j2 = jarmuvek[masodik_jarmu]
+                ut_koltseg_2 = int(tavolsag * j2['koltseg_km'] * kedv_fakt)
+                kapacitas_osszes += j2['kapacitas']
 
-                profit = bevetel - ut_koltseg - vám_birsag
-                st.session_state.penz += profit
-                st.success(f"🎯 Sikeres fuvar ({fuvar_ido} napig tartott)! Tiszta profit: **+{profit:,} Ft**")
+            ossz_ut_koltseg = ut_koltseg_1 + ut_koltseg_2
+
+            # Ellenőrzés, hogy elegendő kapacitású járművet választott-e
+            if mennyiseg > kapacitas_osszes:
+                st.error(f"❌ A kiválasztott járművek kapacitása ({kapacitas_osszes} egység) kevés a bepakolt áruhoz ({mennyiseg} egység)! A fuvar meghiúsult.")
+                st.session_state.penz -= 40000 # Kötbér
             else:
-                vesztesseg_birsag = 50000
-                st.session_state.penz -= (ut_koltseg + vesztesseg_birsag)
-                profit = -ut_koltseg - vesztesseg_birsag
-                st.error(f"❌ Nem megfelelő jármű! Veszteség: **{profit:,} Ft**")
+                raktar_szorzó = 1 + (st.session_state.raktar_szint - 1) * 0.15
+                bevetel = int(aktiv_feladat['alap_bev'] * (mennyiseg / 50) * raktar_szorzó * incoterm_szorzó)
+                
+                if not helyes_klauzula:
+                    bevetel = int(bevetel * 0.7) # Büntetés a rossz klauzula miatt
 
-            # A passziv bevétel a fuvar ideje alatt minden nap jár a sofőrök után!
-            osszes_passziv = (st.session_state.soforok_szama - 1) * 15000 * fuvar_ido
-            st.session_state.penz += osszes_passziv
+                vám_birsag = 0
+                if "DDP" in incoterm and tavolsag >= 500 and random.random() < 0.20:
+                    vám_birsag = 50000
+                    st.warning("⚠️ Vámhivatali akadás DDP fuvarnál! -50,000 Ft vámbírság.")
 
-            # A rivális is halad a napok alatt
-            st.session_state.rivalis_penz += random.randint(45000, 85000) * fuvar_ido
+                profit = bevetel - ossz_ut_koltseg - vám_birsag
+                st.session_state.penz += profit
+                
+                if profit > 0:
+                    st.success(f"🎯 Sikeres multimodális konvoj fuvar ({fuvar_ido} nap)! Tiszta profit: **+{profit:,} Ft**")
+                else:
+                    st.warning(f"⚠️ Ráfizetéses fuvar! Veszteség: **{profit:,} Ft**")
 
-            # A napok számlálója annyival nő, amennyi ideig a fuvar tartott!
+            passziv_bevetel = (st.session_state.soforok_szama - 1) * 15000 * fuvar_ido
+            st.session_state.penz += passziv_bevetel
+
+            st.session_state.rivalis_penz += random.randint(50000, 95000) * fuvar_ido
             st.session_state.kor += fuvar_ido
             st.rerun()
 
     else:
         st.balloons()
-        st.markdown("# 🏆 Vége a 12 napos logisztikai futamnak!")
+        st.markdown("# 🏆 Vége a 12 napos multimodális kihívásnak!")
         st.markdown(f"### A te céged tőkéje: **{st.session_state.penz:,} Ft**")
         st.markdown(f"### A rivális MegaLog Kft. tőkéje: **{st.session_state.rivalis_penz:,} Ft**")
 
         if st.session_state.penz > st.session_state.rivalis_penz:
-            st.success("🥇 Zseniális logisztikai ütemterv! Te nyerted meg a versenyt!")
+            st.success("🥇 Te vagy a logisztikai piacon a legfőbb mogul! Óriási győzelem!")
         else:
-            st.error("🥈 A MegaLog Kft. jobban gazdálkodott az idővel és a flottával.")
+            st.error("🥈 A MegaLog Kft. jobban taktikázott a klauzulákkal és a járművekkel.")
 
         if st.button("🔄 Új játék indítása"):
             st.session_state.indul = False

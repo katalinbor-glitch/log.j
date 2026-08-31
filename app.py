@@ -1,4 +1,4 @@
-       import streamlit as st
+import streamlit as st
 import random
 
 st.set_page_config(page_title="Global Logistics Tycoon", page_icon="🚀", layout="centered")

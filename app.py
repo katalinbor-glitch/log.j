@@ -21,11 +21,10 @@ if not st.session_state.indul:
         st.session_state.kor = 1
         st.session_state.soforok_szama = 1
         st.session_state.raktar_szint = 1
-        st.session_state.bónusz_bevetel = 0 # %
+        st.session_state.bónusz_bevetel = 0 
         st.rerun()
 
 else:
-    # Oldalsáv statisztikák
     st.sidebar.markdown(f"### 📊 {st.session_state.ceg_nev}")
     st.sidebar.metric(label="💰 Tőkéd", value=f"{st.session_state.penz:,} Ft")
     st.sidebar.metric(label="🤖 MegaLog Kft. tőkéje", value=f"{st.session_state.rivalis_penz:,} Ft")
@@ -39,13 +38,13 @@ else:
     if st.session_state.penz >= 50000 and st.sidebar.button("👥 Új sofőr felvétele (50k Ft)"):
         st.session_state.penz -= 50000
         st.session_state.soforok_szama += 1
-        st.success("Új sofőr állt munkába! (Minden körben plusz passzív bevételt hoz)")
+        st.success("Új sofőr állt munkába!")
         st.rerun()
 
     if st.session_state.penz >= 70000 and st.sidebar.button("🏗️ Raktár bővítés (70k Ft)"):
         st.session_state.penz -= 70000
         st.session_state.raktar_szint += 1
-        st.success("A raktár bővült! Nőtt a fuvarokért kapott alapbevétel.")
+        st.success("A raktár bővült!")
         st.rerun()
 
     if st.session_state.kor <= 5:
@@ -69,17 +68,14 @@ else:
         valasztott_cel = st.selectbox("Válassz útvonalat:", list(celok.keys()))
         tavolsag = celok[valasztott_cel]
 
-        # Különleges megbízás esélye
-VIP_megbizas = random.random() < 0.35
+        VIP_megbizas = random.random() < 0.35
         if VIP_megbizas:
-            st.info("⭐ **VIP megbízás érkezett!** Ehhez a fuvarhoz extra minőségű áru jár (+50% bevétel, de szigorú határidő).")
+            st.info("⭐ **VIP megbízás érkezett!** (+50% bevétel)")
 
         mennyiseg = st.slider("Mennyi árut pakolsz be?", 1, j["kapacitas"], 10)
 
         if st.button("🚀 Indulás a fuvarra!", type="primary"):
             ut_koltseg = tavolsag * j["koltseg_km"]
-            
-            # Alap eladási ár + raktár bónusz
             alap_ar = random.randint(1400, 2000)
             raktar_szorzó = 1 + (st.session_state.raktar_szint - 1) * 0.15
             
@@ -89,21 +85,17 @@ VIP_megbizas = random.random() < 0.35
                 bevetel = int(bevetel * 1.5)
 
             profit = bevetel - ut_koltseg
-            
-            # Sofőrök utáni passzív bevétel
             passziv_bevetel = (st.session_state.soforok_szama - 1) * 15000
             ossz_profit = profit + passziv_bevetel
 
             st.session_state.penz += ossz_profit
 
             if ossz_profit > 0:
-                st.success(f"🎉 Sikeres fuvar! Bevétel: {bevetel:,} Ft | Útiköltség: {ut_koltseg:,} Ft | Sofőrök bevétele: +{passziv_bevetel:,} Ft | Tiszta profit: **+{ossz_profit:,} Ft**")
+                st.success(f"🎉 Sikeres fuvar! Tiszta profit: **+{ossz_profit:,} Ft**")
             else:
                 st.warning(f"⚠️ Ráfizetéses fuvar! Veszteség: **{ossz_profit:,} Ft**")
 
-            # Rivális fejlődése (most már a sofőrök miatt ő is kapkod)
             st.session_state.rivalis_penz += random.randint(40000, 85000)
-
             st.session_state.kor += 1
             st.rerun()
 
@@ -116,7 +108,7 @@ VIP_megbizas = random.random() < 0.35
         if st.session_state.penz > st.session_state.rivalis_penz:
             st.success("🥇 Óriási győzelem! Te lettél a logisztikai piac egyeduralkodója!")
         else:
-            st.error("🥈 A MegaLog Kft. ezúttal jobban bírta a tempót. Próbálj meg minél több sofőrt felvenni hamarabb!")
+            st.error("🥈 A MegaLog Kft. ezúttal jobban bírta a tempót.")
 
         if st.button("🔄 Új játék indítása"):
             st.session_state.indul = False

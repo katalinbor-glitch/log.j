@@ -200,6 +200,8 @@ else:
                 extra_birsag = 35000
                 st.error("📸 Villant a traffipax! Gyorshajtási bírság: 35,000 Ft.")
 
+            vám_birsag = 0  # <--- JAVÍTÁS: Kezdetben 0-ra állítva, hogy ne dobjon NameError-t kapacitáshiba esetén sem!
+
             if mennyiseg > kapacitas_osszes:
                 st.error(f"❌ A járművek kapacitása ({kapacitas_osszes}) kevés a rakományhoz ({mennyiseg})! A fuvar meghiúsult.")
                 st.session_state.penz -= 40000
@@ -223,7 +225,6 @@ else:
                         idoblak_uzenet = " Időablak csúszás (kötbér levonva)."
                         st.warning(f"⚠️ Késés az időablakban!{idoblak_uzenet}")
 
-                vám_birsag = 0
                 if "DDP" in incoterm and tavolsag >= 500 and random.random() < 0.20:
                     vám_birsag = 50000
                     st.warning("⚠️ Vámhivatali akadás DDP fuvarnál! -50,000 Ft vámbírság.")
@@ -231,14 +232,12 @@ else:
                 profit = bevetel - ossz_ut_koltseg - extra_birsag - vám_birsag - esemeny_koltseg
                 st.session_state.penz += profit
                 
-                # Tanulság szöveg generálása az elemzéshez
                 tanulsag = f"A {incoterm.split(' - ')[0]} klauzula és a kiválasztott flotta kombinációja bruttó {bevetel:,} Ft bevételt hozott. "
                 if profit > 0:
                     tanulsag += "Nyereséges volt a döntés, a járművek km-költségei nem ették meg a profitot."
                 else:
-                    tanulsag += "Ráfizetéses lett a fuvar: vagy a túl magas km-költségű jármű (pl. repülő rövid távon), vagy a váratlan események/bírságok emésztették fel a pénzt."
+                    tanulsag += "Ráfizetéses lett a fuvar: vagy a túl magas km-költségű jármű, vagy a váratlan események/bírságok emésztették fel a pénzt."
 
-            # Napló mentése a következő kör eleji elemzéshez
             st.session_state.utolso_naplo = {
                 "feladat": aktiv_feladat['cim'],
                 "tav": tavolsag,
